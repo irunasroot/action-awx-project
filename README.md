@@ -1,235 +1,135 @@
 # Create a GitHub Action Using TypeScript
 
-[![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
-[![Check dist/](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
+[![GitHub Super-Linter](https://github.com/irunasroot/action-awx-project/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
+![CI](https://github.com/irunasroot/action-awx-project/actions/workflows/ci.yml/badge.svg)
+[![Check dist/](https://github.com/irunasroot/action-awx-project/actions/workflows/check-dist.yml/badge.svg)](https://github.com/irunasroot/action-awx-project/actions/workflows/check-dist.yml)
+[![CodeQL](https://github.com/irunasroot/action-awx-project/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/irunasroot/action-awx-project/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-Use this template to bootstrap the creation of a TypeScript action. :rocket:
+Action for creating or updating an AWX/AAP project. The idea is for using this
+is that a playbook project could self-register to AWX/AAP. If the project is
+already created in AWX you can specify the project_id variable which will update
+the project to match the configuration provided. If project_id is not provided,
+the action will attempt to find a matching project by name and organization and
+update accordingly. If its unable to find an existing project, the action will
+attempt to create a new one.
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
-
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
-
-## Create Your Own Action
-
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
-
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
-
-> [!IMPORTANT]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
-
-## Initial Setup
-
-After you've cloned the repository to your local machine or codespace, you'll
-need to perform some initial setup steps before you can develop your action.
-
-> [!NOTE]
->
-> You'll need to have a reasonably modern version of
-> [Node.js](https://nodejs.org) handy (20.x or later should work!). If you are
-> using a version manager like [`nodenv`](https://github.com/nodenv/nodenv) or
-> [`nvm`](https://github.com/nvm-sh/nvm), this template has a `.node-version`
-> file at the root of the repository that will be used to automatically switch
-> to the correct version when you `cd` into the repository. Additionally, this
-> `.node-version` file is used by GitHub Actions in any `actions/setup-node`
-> actions.
-
-1. :hammer_and_wrench: Install the dependencies
-
-   ```bash
-   npm install
-   ```
-
-1. :building_construction: Package the TypeScript for distribution
-
-   ```bash
-   npm run bundle
-   ```
-
-1. :white_check_mark: Run the tests
-
-   ```bash
-   $ npm test
-
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
-
-   ...
-   ```
-
-## Update the Action Metadata
-
-The [`action.yml`](action.yml) file defines metadata about your action, such as
-input(s) and output(s). For details about this file, see
-[Metadata syntax for GitHub Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions).
-
-When you copy this repository, update `action.yml` with the name, description,
-inputs, and outputs for your action.
-
-## Update the Action Code
-
-The [`src/`](./src/) directory is the heart of your action! This contains the
-source code that will be run when your action is invoked. You can replace the
-contents of this directory with your own code.
-
-There are a few things to keep in mind when writing your action code:
-
-- Most GitHub Actions toolkit and CI/CD operations are processed asynchronously.
-  In `main.ts`, you will see that the action is run in an `async` function.
-
-  ```javascript
-  import * as core from '@actions/core'
-  //...
-
-  async function run() {
-    try {
-      //...
-    } catch (error) {
-      core.setFailed(error.message)
-    }
-  }
-  ```
-
-  For more information about the GitHub Actions toolkit, see the
-  [documentation](https://github.com/actions/toolkit/blob/master/README.md).
-
-So, what are you waiting for? Go ahead and start customizing your action!
-
-1. Create a new branch
-
-   ```bash
-   git checkout -b releases/v1
-   ```
-
-1. Replace the contents of `src/` with your action code
-1. Add tests to `__tests__/` for your source code
-1. Format, test, and build the action
-
-   ```bash
-   npm run all
-   ```
-
-   > This step is important! It will run [`ncc`](https://github.com/vercel/ncc)
-   > to build the final JavaScript action code with all dependencies included.
-   > If you do not run this step, your action will not work correctly when it is
-   > used in a workflow. This step also includes the `--license` option for
-   > `ncc`, which will create a license file for all of the production node
-   > modules used in your project.
-
-1. Commit your changes
-
-   ```bash
-   git add .
-   git commit -m "My first action is ready!"
-   ```
-
-1. Push them to your repository
-
-   ```bash
-   git push -u origin releases/v1
-   ```
-
-1. Create a pull request and get feedback on your action
-1. Merge the pull request into the `main` branch
-
-Your action is now published! :rocket:
-
-For information about versioning your action, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-## Validate the Action
-
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Test Local Action
-    id: test-action
-    uses: ./
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
-```
-
-For example workflow runs, check out the
-[Actions tab](https://github.com/actions/typescript-action/actions)! :rocket:
+Works with AWX v18 or above, and AAP v2 or above. This _should_ work with older
+versions of AWX but not guaranteed.
 
 ## Usage
 
-After testing, you can create version tag(s) that developers can use to
-reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
+```yaml
+- uses: irunasroot/action-awx-project@v1
+  with:
+    # The URL of AWX/AAP.
+    # If using an insecure SSL certificate be sure to set
+    #   controller_verify_certificate to false
+    controller_url: ''
 
-To include the action in a workflow in another repository, you can use the
-`uses` syntax with the `@` symbol to reference a specific branch, tag, or commit
-hash.
+    # The username to log into the controller. One of username/password or
+    #   token needs to be provided.
+    controller_username: ''
+
+    # The password to log into the controller. One of username/password or
+    #   token needs to be provided.
+    controller_password: ''
+
+    # The token to authenticate to the controller. One of username/password or
+    #   token needs to be provided.
+    controller_token: ''
+
+    # The timeout in milliseconds to wait for a call to the controller before
+    #   erroring out.
+    #   Note this is not a job execution timeout, but rather the timeout of
+    #   the actual API calls to the controller
+    # Defaults to 1000
+    controller_timeout: ''
+
+    # Verify if the controller's certificate is valid.
+    # Defaults to true
+    controller_verify_certificate: ''
+
+    # The Project ID only set this if you already have a project defined.
+    #   Running this action with project_is specified will keep it in sync with
+    #   the rest of the settings defined in this action.
+    project_id: ''
+
+    # Name of this project.
+    name: ''
+
+    # Optional description of this project.
+    description: ''
+
+    # Local path (relative to PROJECTS_ROOT) containing playbooks and related
+    #   files for this project. Type string
+    local_path: ''
+
+    # Specifies the source control system used to store the project. Can only
+    #   be one of '', 'git', 'svn', 'insights', or 'archive'.
+    # Defaults to git
+    scm_type: ''
+
+    # The location where the project is stored. If not specified this
+    #   will be automatically discovered.
+    scm_url: ''
+
+    # Specific branch, tag or commit to checkout.
+    scm_branch: ''
+
+    # For git projects, an additional refspec to fetch.
+    scm_refspec: ''
+
+    # Discard any local changes before syncing the project.
+    scm_clean: ''
+
+    # Track submodules latest commits on defined branch.
+    scm_track_submodules: ''
+
+    # Delete the project before syncing.
+    scm_delete_on_update: ''
+
+    # Credential ID.
+    credential: ''
+
+    # The amount of time (in seconds) to run before the task is canceled.
+    timeout: ''
+
+    # The organization ID used to determine access to this template.
+    # Defaults to 1 (The Default organization)
+    organization: ''
+
+    # Update the project when a job is launched that uses the project.
+    scm_update_on_launch: ''
+
+    # The number of seconds after the last project update ran that a new
+    #   project update will be launched as a job dependency.
+    scm_update_cache_timeout: ''
+
+    # Allow changing the SCM branch or revision in a job template that uses
+    #   this project.
+    allow_override: ''
+
+    # The default execution environment for jobs run using this project.
+    default_environment: ''
+
+    # An optional credential used for validating files in the project against
+    #   unexpected changes.
+    signature_validation_credential: ''
+```
+
+## Scenarios
+
+### Launch a Job Template
 
 ```yaml
 steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Test Local Action
-    id: test-action
-    uses: actions/typescript-action@v1 # Commit with the `v1` tag
+  - name: Create/Update AWX Project
+    uses: irunasroot/action-awx-project@v1
     with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
+      controller_url: https://awx.irunasroot.com
+      controller_username: ${{ secrets.AWX_USERNAME }}
+      controller_password: ${{ secrets.AWX_PASSWORD }}
+      name: My super Project
+      description: The best project ever!
 ```
-
-## Publishing a New Release
-
-This project includes a helper script, [`script/release`](./script/release)
-designed to streamline the process of tagging and pushing new releases for
-GitHub Actions.
-
-GitHub Actions allows users to select a specific version of the action to use,
-based on release tags. This script simplifies this process by performing the
-following steps:
-
-1. **Retrieving the latest release tag:** The script starts by fetching the most
-   recent SemVer release tag of the current branch, by looking at the local data
-   available in your repository.
-1. **Prompting for a new release tag:** The user is then prompted to enter a new
-   release tag. To assist with this, the script displays the tag retrieved in
-   the previous step, and validates the format of the inputted tag (vX.X.X). The
-   user is also reminded to update the version field in package.json.
-1. **Tagging the new release:** The script then tags a new release and syncs the
-   separate major tag (e.g. v1, v2) with the new release tag (e.g. v1.0.0,
-   v2.1.2). When the user is creating a new major release, the script
-   auto-detects this and creates a `releases/v#` branch for the previous major
-   version.
-1. **Pushing changes to remote:** Finally, the script pushes the necessary
-   commits, tags and branches to the remote repository. From here, you will need
-   to create a new release in GitHub so users can easily reference the new tags
-   in their workflows.

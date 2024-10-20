@@ -1,23 +1,125 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
-
-# Add your action's branding here. This will appear on the GitHub Marketplace.
+name: 'Create AWX/AAP Project'
+description: 'Action for launching an AWX/AAP Project'
+author: 'Dennis Whitney'
 branding:
-  icon: 'heart'
-  color: 'red'
+  color: red
+  icon: chevron-right
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  controller_url:
+    description: 'The URL of AWX/AAP. Type: string'
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+  controller_username:
+    description:
+      'The username to log into the controller. One of username/password or
+      token needs to be provided. Type: string'
+    required: false
+  controller_password:
+    description:
+      'The password to log into the controller. One of username/password or
+      token needs to be provided. Type: string'
+    required: false
+  controller_token:
+    description:
+      'The token to authenticate to the controller. One of username/password or
+      token needs to be provided. Type: string'
+    required: false
+  controller_timeout:
+    description:
+      'The timeout in milliseconds to wait for a call to the controller before
+      erroring out. Type: string[integer]'
+    required: false
+    default: '5000'
+  controller_verify_certificate:
+    description:
+      "Verify if the controller's certificate is valid. Type string[boolean]"
+    required: false
+    default: 'true'
+  project_id:
+    description:
+      'The Project ID only set this if you already have a project defined.
+      Running this action with project_is specified will keep it in sync with
+      the rest of the settings defined in this action. Type string[integer]'
+    required: false
+  name:
+    description: Name of this project. Type string.
+    required: true
+  description:
+    description: 'Optional description of this project. Type string'
+    required: false
+  local_path:
+    description:
+      'Local path (relative to PROJECTS_ROOT) containing playbooks and related
+      files for this project. Type string'
+    required: false
+  scm_type:
+    description:
+      "Specifies the source control system used to store the project. Can only
+      be one of 'git', 'svn', 'insights', or 'archive'. Type string"
+    required: false
+    default: 'git'
+  scm_url:
+    description:
+      "The location where the project is stored. If scm_type is 'git' and this
+      is not specified this will automatically be discovered. Type string"
+    required: false
+  scm_branch:
+    description: 'Specific branch, tag or commit to checkout. Type string'
+    required: false
+  scm_refspec:
+    description: 'For git projects, an additional refspec to fetch. Type string'
+    required: false
+  scm_clean:
+    description:
+      'Discard any local changes before syncing the project. Type
+      string[boolean]'
+    required: false
+  scm_track_submodules:
+    description:
+      'Track submodules latest commits on defined branch. Type string[boolean]'
+    required: false
+  scm_delete_on_update:
+    description: 'Delete the project before syncing. Type string[boolean]'
+    required: false
+  credential:
+    description: 'Credential ID. Type string[integer]'
+    required: false
+  timeout:
+    description:
+      'The amount of time (in seconds) to run before the task is canceled. Type
+      string[integer]'
+    required: false
+  organization:
+    description:
+      'The organization ID used to determine access to this template. Type
+      string[integer]'
+    required: true
+    default: '1'
+  scm_update_on_launch:
+    description:
+      'Update the project when a job is launched that uses the project. Type
+      string[boolean]'
+    required: false
+  scm_update_cache_timeout:
+    description:
+      'The number of seconds after the last project update ran that a new
+      project update will be launched as a job dependency. Type string[integer]'
+    required: false
+  allow_override:
+    description:
+      'Allow changing the SCM branch or revision in a job template that uses
+      this project. Type string[boolean]'
+    required: false
+  default_environment:
+    description:
+      'The default execution environment for jobs run using this project. Type
+      string[integer]'
+    required: false
+  signature_validation_credential:
+    description:
+      'An optional credential used for validating files in the project against
+      unexpected changes. Type string[integer]'
+    required: false
 
 runs:
   using: node20

@@ -1,89 +1,325 @@
-/**
- * Unit tests for the action's main functionality, src/main.ts
- *
- * These should be run as if the action was called from a workflow.
- * Specifically, the inputs listed in `action.yml` should be set as environment
- * variables following the pattern `INPUT_<INPUT_NAME>`.
- */
-
 import * as core from '@actions/core'
-import * as main from '../src/main'
+import axios from 'axios'
 
-// Mock the action's main function
-const runMock = jest.spyOn(main, 'run')
+import { run } from '../src/main'
+import { getInput } from './mock_functions/getInput'
+import { PROJECT_INPUT_DATA } from './mock_data/project_input'
+import { Project } from '../src/models'
+import {
+  PROJECT_DATA,
+  PROJECT_DATA_BY_NAME,
+  PROJECT_DATA_BY_NAME_NONE_FOUND
+} from './mock_data/project'
+import { GITHUB_DATA } from './mock_data/github'
 
-// Other utilities
-const timeRegex = /^\d{2}:\d{2}:\d{2}/
+jest.mock('axios')
+jest.mock('@actions/core')
 
-// Mock the GitHub Actions core library
-let debugMock: jest.SpiedFunction<typeof core.debug>
-let errorMock: jest.SpiedFunction<typeof core.error>
-let getInputMock: jest.SpiedFunction<typeof core.getInput>
-let setFailedMock: jest.SpiedFunction<typeof core.setFailed>
-let setOutputMock: jest.SpiedFunction<typeof core.setOutput>
+const mockAxios = axios as jest.Mocked<typeof axios>
+const mockCore = core as jest.Mocked<typeof core>
 
-describe('action', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
+mockAxios.create.mockImplementation(() => axios)
+mockCore.debug.mockImplementation()
+mockCore.info.mockImplementation()
+mockCore.startGroup.mockImplementation()
+mockCore.endGroup.mockImplementation()
+mockCore.setFailed.mockImplementation()
+mockCore.setSecret.mockImplementation()
+mockCore.getInput.mockImplementation(getInput)
 
-    debugMock = jest.spyOn(core, 'debug').mockImplementation()
-    errorMock = jest.spyOn(core, 'error').mockImplementation()
-    getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
-    setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
-    setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
+process.env.GITHUB_REPOSITORY = GITHUB_DATA.GITHUB_REPOSITORY
+process.env.INPUT_CONTROLLER_URL = PROJECT_INPUT_DATA.controller_url
+process.env.INPUT_CONTROLLER_USERNAME = PROJECT_INPUT_DATA.controller_username
+process.env.INPUT_CONTROLLER_PASSWORD = PROJECT_INPUT_DATA.controller_password
+process.env.INPUT_CONTROLLER_TOKEN = PROJECT_INPUT_DATA.controller_token
+process.env.INPUT_CONTROLLER_TIMEOUT = String(
+  PROJECT_INPUT_DATA.controller_timeout
+)
+process.env.INPUT_CONTROLLER_VERIFY_CERTIFICATE = String(
+  PROJECT_INPUT_DATA.controller_verify_certificate
+)
+const OLDENV = process.env
+
+beforeEach(() => {
+  jest.resetModules()
+  jest.spyOn(Project.prototype, 'sleep').mockImplementation()
+  jest.spyOn(Project.prototype, 'sleep').mockImplementation()
+  process.env = { ...OLDENV }
+})
+
+afterAll(() => {
+  process.env = OLDENV
+})
+
+describe('Test main run function', () => {
+  test('Testing creating Project', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_DESCRIPTION = String(PROJECT_DATA.description)
+
+    process.env.INPUT_LOCAL_PATH = PROJECT_DATA.local_path
+    process.env.INPUT_SCM_TYPE = PROJECT_DATA.scm_type
+    process.env.INPUT_SCM_URL = PROJECT_DATA.scm_url
+    process.env.INPUT_SCM_BRANCH = 'master'
+    process.env.INPUT_SCM_REFSPEC = 'refs/head/master'
+    process.env.INPUT_SCM_CLEAN = String(PROJECT_DATA.scm_clean)
+    process.env.INPUT_SCM_TRACK_SUBMODULES = String(
+      PROJECT_DATA.scm_track_submodules
+    )
+    process.env.INPUT_SCM_DELETE_ON_UPDATE = String(
+      PROJECT_DATA.scm_delete_on_update
+    )
+    process.env.INPUT_CREDENTIAL = String(PROJECT_DATA.credential)
+    process.env.INPUT_TIMEOUT = String(PROJECT_DATA.timeout)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_UPDATE_ON_LAUNCH = String(
+      PROJECT_DATA.scm_update_on_launch
+    )
+    process.env.INPUT_SCM_UPDATE_CACHE_TIMEOUT = String(
+      PROJECT_DATA.scm_update_cache_timeout
+    )
+    process.env.INPUT_ALLOW_OVERRIDE = String(PROJECT_DATA.allow_override)
+    process.env.INPUT_DEFAULT_ENVIRONMENT = String(
+      PROJECT_DATA.default_environment
+    )
+    process.env.INPUT_SIGNATURE_VALIDATION_CREDENTIAL = String(
+      PROJECT_DATA.signature_validation_credential
+    )
+
+    mockAxios.get.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.put.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
   })
 
-  it('sets the time output', async () => {
-    // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation(name => {
-      switch (name) {
-        case 'milliseconds':
-          return '500'
-        default:
-          return ''
+  test('Testing correct scm_type no URL', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_SCM_TYPE = 'git'
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+
+    mockAxios.get.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.put.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    // Unsure how to validate that the scm_url was properly set
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
+  })
+
+  test('Testing correct scm_type different URL', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_DESCRIPTION = 'Demo Project'
+    process.env.INPUT_SCM_TYPE = 'git'
+    process.env.INPUT_SCM_URL =
+      'https://github.com/minsis/actions-awx-project-test'
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+
+    mockAxios.get.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.put.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    // Unsure how to validate that the scm_url was properly set
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
+  })
+
+  test('Failing missing scm_type', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_SCM_TYPE = ''
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+
+    // Unsure how to validate that the scm_url was properly set
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(1)
+  })
+
+  test('Testing project update with project_id', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.put.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    // Unsure how to validate that the scm_url was properly set
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
+  })
+
+  test('Failing project update with project_id', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.put.mockRejectedValue(new URIError('failing updateProject'))
+
+    // Unsure how to validate that the scm_url was properly set
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(1)
+  })
+
+  test('Testing project update with project_id - none found', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockRejectedValueOnce({
+      response: {
+        status: 404,
+        data: {
+          detail: 'Not found.'
+        }
       }
     })
 
-    await main.run()
-    expect(runMock).toHaveReturned()
+    mockAxios.put.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
 
-    // Verify that all of the core library functions were called correctly
-    expect(debugMock).toHaveBeenNthCalledWith(1, 'Waiting 500 milliseconds ...')
-    expect(debugMock).toHaveBeenNthCalledWith(
-      2,
-      expect.stringMatching(timeRegex)
-    )
-    expect(debugMock).toHaveBeenNthCalledWith(
-      3,
-      expect.stringMatching(timeRegex)
-    )
-    expect(setOutputMock).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      expect.stringMatching(timeRegex)
-    )
-    expect(errorMock).not.toHaveBeenCalled()
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
   })
 
-  it('sets a failed status', async () => {
-    // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation(name => {
-      switch (name) {
-        case 'milliseconds':
-          return 'this is not a number'
-        default:
-          return ''
+  test('Failing project update with project_id - general error', async () => {
+    process.env.INPUT_PROJECT_ID = String(PROJECT_DATA.id)
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockRejectedValueOnce({
+      response: {
+        status: 500
       }
     })
 
-    await main.run()
-    expect(runMock).toHaveReturned()
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(1)
+  })
 
-    // Verify that all of the core library functions were called correctly
-    expect(setFailedMock).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds not a number'
-    )
-    expect(errorMock).not.toHaveBeenCalled()
+  test('Testing project update with name and org', async () => {
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockResolvedValueOnce({
+      data: PROJECT_DATA_BY_NAME
+    })
+
+    mockAxios.put.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    // Unsure how to validate that the scm_url was properly set
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
+  })
+
+  test('Failing project update with name and org - none found', async () => {
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockResolvedValueOnce({
+      data: PROJECT_DATA_BY_NAME_NONE_FOUND
+    })
+
+    mockAxios.put.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    // Unsure how to validate that the scm_url was properly set
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
+  })
+
+  test('Failing project update with name and org - error 404', async () => {
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockRejectedValueOnce({
+      response: {
+        status: 404
+      }
+    })
+
+    mockAxios.post.mockResolvedValueOnce({
+      data: PROJECT_DATA
+    })
+
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(0)
+  })
+
+  test('Failing project update with name and org - error general', async () => {
+    process.env.INPUT_NAME = String(PROJECT_DATA.name)
+    process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+    process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockRejectedValueOnce({
+      response: {
+        status: 400
+      }
+    })
+
+    expect(await run()).toBeUndefined()
+    expect(mockCore.setFailed).toHaveBeenCalledTimes(1)
   })
 })
