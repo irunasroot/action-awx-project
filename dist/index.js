@@ -33667,7 +33667,7 @@ class ControllerApi {
     }
     async createProject(payload) {
         // endpoint: `/api/v2/projects/`
-        core.debug(`Create Project`);
+        core.debug(`Creating Project`);
         core.debug(`API endpoint: /api/v2/projects/`);
         return this.client
             .post('/api/v2/projects/', payload)
@@ -33682,9 +33682,12 @@ class ControllerApi {
     }
     async updateProject(project_id, payload) {
         // endpoint: `/api/v2/projects/${project_id}`
+        core.debug(`Updating Project`);
+        core.debug(`API endpoint: /api/v2/projects/${project_id}`);
         return this.client
             .put(`/api/v2/projects/${project_id}`, payload)
             .then(response => {
+            core.debug(`Response Successful: ${JSON.stringify(response.data)}`);
             return response.data;
         })
             .catch(error => {
