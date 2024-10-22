@@ -1,4 +1,4 @@
-# Create a GitHub Action Using TypeScript
+# Action for creating an AWX/AAP Project
 
 [![GitHub Super-Linter](https://github.com/irunasroot/action-awx-project/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/irunasroot/action-awx-project/actions/workflows/ci.yml/badge.svg)
