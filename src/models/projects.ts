@@ -123,6 +123,8 @@ class Project extends ControllerApi {
   }
 
   async run(): Promise<void> {
+    await this.init()
+
     let currentProject: any
     let project: any
 

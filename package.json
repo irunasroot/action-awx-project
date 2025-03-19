@@ -1,7 +1,7 @@
 {
   "name": "action-awx-project",
   "description": "Action for creating an AWX/AAP Project",
-  "version": "v1.0.3",
+  "version": "v1.1.0",
   "author": "Dennis Whitney",
   "private": true,
   "homepage": "https://github.com/irunasroot/action-awx-project",

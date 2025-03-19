@@ -6,6 +6,7 @@ import http from 'http'
 class ControllerApi {
   controller_url: string
   client: axios.AxiosInstance
+  baseApi: string
 
   constructor(
     controller_url: string,
@@ -41,6 +42,7 @@ class ControllerApi {
     }
 
     this.controller_url = controller_url
+    this.baseApi = ''
 
     const axiosOptions: any = {
       baseURL: controller_url,
@@ -62,6 +64,32 @@ class ControllerApi {
     }
 
     this.client = axios.create(axiosOptions)
+  }
+
+  async init(): Promise<void> {
+    this.baseApi = await this.getBaseApi()
+  }
+
+  async getBaseApi(): Promise<string> {
+    core.debug('Determining the base API endpoint')
+
+    return this.client
+      .get(`/api/`)
+      .then(response => {
+        core.debug(`Response Successful: ${JSON.stringify(response.data)}`)
+        switch (response.headers['x-api-product-name'] ?? '') {
+          case 'AAP gateway':
+            return '/api/controller/v2'
+          default:
+            return '/api/v2'
+        }
+      })
+      .catch((error: any) => {
+        core.debug(`Response Failed: ${error.message}`)
+        throw new Error(
+          `Error trying to get base API endpoint: ${error.message}.`
+        )
+      })
   }
 
   async getProjectByName(name: string, organization: number): Promise<any> {

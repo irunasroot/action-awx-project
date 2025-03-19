@@ -143,4 +143,122 @@ describe('Testing Project object', () => {
       )
     }).toThrow(Error)
   })
+
+  test('Base API Endpoint should be /api/v2', async () => {
+    const project = new Project(
+      PROJECT_INPUT_DATA.controller_url,
+      PROJECT_INPUT_DATA.controller_username,
+      PROJECT_INPUT_DATA.controller_password,
+      PROJECT_INPUT_DATA.controller_token,
+      PROJECT_INPUT_DATA.controller_timeout,
+      PROJECT_INPUT_DATA.controller_verify_certificate,
+      PROJECT_INPUT_DATA.project_id,
+      'The iRunAsRoot project', //name
+      PROJECT_INPUT_DATA.description,
+      PROJECT_INPUT_DATA.local_path,
+      'git', // scm_type
+      PROJECT_INPUT_DATA.scm_url,
+      PROJECT_INPUT_DATA.scm_branch,
+      PROJECT_INPUT_DATA.scm_refspec,
+      PROJECT_INPUT_DATA.scm_clean,
+      PROJECT_INPUT_DATA.scm_track_submodules,
+      PROJECT_INPUT_DATA.scm_delete_on_update,
+      PROJECT_INPUT_DATA.credential,
+      PROJECT_INPUT_DATA.timeout,
+      1, // organization
+      PROJECT_INPUT_DATA.scm_update_on_launch,
+      PROJECT_INPUT_DATA.scm_update_cache_timeout,
+      PROJECT_INPUT_DATA.allow_override,
+      PROJECT_INPUT_DATA.default_environment,
+      PROJECT_INPUT_DATA.signature_validation_credential
+    )
+
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {
+        'x-api-product-name': 'AWX'
+      }
+    })
+
+    project.baseApi = await project.getBaseApi()
+
+    expect(project.baseApi).toEqual('/api/v2')
+  })
+
+  test('Base API Endpoint should be /api/controller/v2', async () => {
+    const project = new Project(
+      PROJECT_INPUT_DATA.controller_url,
+      PROJECT_INPUT_DATA.controller_username,
+      PROJECT_INPUT_DATA.controller_password,
+      PROJECT_INPUT_DATA.controller_token,
+      PROJECT_INPUT_DATA.controller_timeout,
+      PROJECT_INPUT_DATA.controller_verify_certificate,
+      PROJECT_INPUT_DATA.project_id,
+      'The iRunAsRoot project', //name
+      PROJECT_INPUT_DATA.description,
+      PROJECT_INPUT_DATA.local_path,
+      'git', // scm_type
+      PROJECT_INPUT_DATA.scm_url,
+      PROJECT_INPUT_DATA.scm_branch,
+      PROJECT_INPUT_DATA.scm_refspec,
+      PROJECT_INPUT_DATA.scm_clean,
+      PROJECT_INPUT_DATA.scm_track_submodules,
+      PROJECT_INPUT_DATA.scm_delete_on_update,
+      PROJECT_INPUT_DATA.credential,
+      PROJECT_INPUT_DATA.timeout,
+      1, // organization
+      PROJECT_INPUT_DATA.scm_update_on_launch,
+      PROJECT_INPUT_DATA.scm_update_cache_timeout,
+      PROJECT_INPUT_DATA.allow_override,
+      PROJECT_INPUT_DATA.default_environment,
+      PROJECT_INPUT_DATA.signature_validation_credential
+    )
+
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {
+        'x-api-product-name': 'AAP gateway'
+      }
+    })
+
+    project.baseApi = await project.getBaseApi()
+
+    expect(project.baseApi).toEqual('/api/controller/v2')
+  })
+
+  test('Failing API endpoint discovery', async () => {
+    const project = new Project(
+      PROJECT_INPUT_DATA.controller_url,
+      PROJECT_INPUT_DATA.controller_username,
+      PROJECT_INPUT_DATA.controller_password,
+      PROJECT_INPUT_DATA.controller_token,
+      PROJECT_INPUT_DATA.controller_timeout,
+      PROJECT_INPUT_DATA.controller_verify_certificate,
+      PROJECT_INPUT_DATA.project_id,
+      'The iRunAsRoot project', //name
+      PROJECT_INPUT_DATA.description,
+      PROJECT_INPUT_DATA.local_path,
+      'git', // scm_type
+      PROJECT_INPUT_DATA.scm_url,
+      PROJECT_INPUT_DATA.scm_branch,
+      PROJECT_INPUT_DATA.scm_refspec,
+      PROJECT_INPUT_DATA.scm_clean,
+      PROJECT_INPUT_DATA.scm_track_submodules,
+      PROJECT_INPUT_DATA.scm_delete_on_update,
+      PROJECT_INPUT_DATA.credential,
+      PROJECT_INPUT_DATA.timeout,
+      1, // organization
+      PROJECT_INPUT_DATA.scm_update_on_launch,
+      PROJECT_INPUT_DATA.scm_update_cache_timeout,
+      PROJECT_INPUT_DATA.allow_override,
+      PROJECT_INPUT_DATA.default_environment,
+      PROJECT_INPUT_DATA.signature_validation_credential
+    )
+
+    mockAxios.get.mockRejectedValueOnce(new Error('Server Failure'))
+
+    await expect(async () => {
+      project.baseApi = await project.getBaseApi()
+    }).rejects.toThrow(Error)
+  })
 })
