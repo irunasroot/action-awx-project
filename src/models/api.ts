@@ -154,7 +154,7 @@ class ControllerApi {
     core.debug(`API endpoint: ${this.baseApi}/projects/`)
 
     return this.client
-      .post('${this.baseApi}/projects/', payload)
+      .post(`${this.baseApi}/projects/`, payload)
       .then(response => {
         core.debug(`Response Successful: ${JSON.stringify(response.data)}`)
         return response.data
