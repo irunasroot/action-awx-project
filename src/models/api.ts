@@ -93,14 +93,14 @@ class ControllerApi {
   }
 
   async getProjectByName(name: string, organization: number): Promise<any> {
-    // endpoint: /api/v2/projects?name=${name}&organization=${organization}
+    // endpoint: ${this.baseApi}/projects?name=${name}&organization=${organization}
     core.debug('Getting Project by Name')
     core.debug(
-      `API endpoint: /api/v2/projects?name=${name}&organization=${organization}`
+      `API endpoint: ${this.baseApi}/projects?name=${name}&organization=${organization}`
     )
 
     return this.client
-      .get(`/api/v2/projects`, {
+      .get(`${this.baseApi}/projects`, {
         params: {
           name: name,
           organization: organization
@@ -125,12 +125,12 @@ class ControllerApi {
   }
 
   async getProjectById(project_id: number): Promise<any> {
-    // endpoint: /api/v2/projects/${project_id}
+    // endpoint: ${this.baseApi}/projects/${project_id}
     core.debug('Getting Project by ID')
-    core.debug(`API endpoint: /api/v2/projects/${project_id}`)
+    core.debug(`API endpoint: ${this.baseApi}/projects/${project_id}`)
 
     return this.client
-      .get(`/api/v2/projects/${project_id}`)
+      .get(`${this.baseApi}/projects/${project_id}`)
       .then(response => {
         core.debug(`Response Successful: ${JSON.stringify(response.data)}`)
         return response.data
@@ -149,12 +149,12 @@ class ControllerApi {
   }
 
   async createProject(payload: any): Promise<any> {
-    // endpoint: `/api/v2/projects/`
+    // endpoint: `${this.baseApi}/projects/`
     core.debug(`Creating Project`)
-    core.debug(`API endpoint: /api/v2/projects/`)
+    core.debug(`API endpoint: ${this.baseApi}/projects/`)
 
     return this.client
-      .post('/api/v2/projects/', payload)
+      .post('${this.baseApi}/projects/', payload)
       .then(response => {
         core.debug(`Response Successful: ${JSON.stringify(response.data)}`)
         return response.data
@@ -166,12 +166,12 @@ class ControllerApi {
   }
 
   async updateProject(project_id: number, payload: any): Promise<any> {
-    // endpoint: `/api/v2/projects/${project_id}`
+    // endpoint: `${this.baseApi}/projects/${project_id}`
     core.debug(`Updating Project`)
-    core.debug(`API endpoint: /api/v2/projects/${project_id}`)
+    core.debug(`API endpoint: ${this.baseApi}/projects/${project_id}`)
 
     return this.client
-      .put(`/api/v2/projects/${project_id}`, payload)
+      .put(`${this.baseApi}/projects/${project_id}`, payload)
       .then(response => {
         core.debug(`Response Successful: ${JSON.stringify(response.data)}`)
         return response.data
