@@ -87,6 +87,11 @@ describe('Test main run function', () => {
     )
 
     mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
+
+    mockAxios.get.mockResolvedValueOnce({
       data: PROJECT_DATA
     })
 
@@ -107,6 +112,11 @@ describe('Test main run function', () => {
     process.env.INPUT_NAME = String(PROJECT_DATA.name)
     process.env.INPUT_SCM_TYPE = 'git'
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
 
     mockAxios.get.mockResolvedValueOnce({
       data: PROJECT_DATA
@@ -135,6 +145,11 @@ describe('Test main run function', () => {
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
 
     mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
+
+    mockAxios.get.mockResolvedValueOnce({
       data: PROJECT_DATA
     })
 
@@ -156,6 +171,11 @@ describe('Test main run function', () => {
     process.env.INPUT_NAME = String(PROJECT_DATA.name)
     process.env.INPUT_SCM_TYPE = ''
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
+
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
 
     // Unsure how to validate that the scm_url was properly set
     expect(await run()).toBeUndefined()
@@ -192,6 +212,11 @@ describe('Test main run function', () => {
     process.env.INPUT_SCM_TYPE = 'git'
 
     mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
+
+    mockAxios.get.mockResolvedValueOnce({
       data: PROJECT_DATA
     })
 
@@ -207,6 +232,11 @@ describe('Test main run function', () => {
     process.env.INPUT_NAME = String(PROJECT_DATA.name)
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
     process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
 
     mockAxios.get.mockRejectedValueOnce({
       response: {
@@ -235,6 +265,11 @@ describe('Test main run function', () => {
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
     process.env.INPUT_SCM_TYPE = 'git'
 
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
+
     mockAxios.get.mockRejectedValueOnce({
       response: {
         status: 500
@@ -249,6 +284,11 @@ describe('Test main run function', () => {
     process.env.INPUT_NAME = String(PROJECT_DATA.name)
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
     process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
 
     mockAxios.get.mockResolvedValueOnce({
       data: PROJECT_DATA_BY_NAME
@@ -273,6 +313,11 @@ describe('Test main run function', () => {
     process.env.INPUT_SCM_TYPE = 'git'
 
     mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
+
+    mockAxios.get.mockResolvedValueOnce({
       data: PROJECT_DATA_BY_NAME_NONE_FOUND
     })
 
@@ -294,6 +339,11 @@ describe('Test main run function', () => {
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
     process.env.INPUT_SCM_TYPE = 'git'
 
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
+
     mockAxios.get.mockRejectedValueOnce({
       response: {
         status: 404
@@ -312,6 +362,11 @@ describe('Test main run function', () => {
     process.env.INPUT_NAME = String(PROJECT_DATA.name)
     process.env.INPUT_ORGANIZATION = String(PROJECT_DATA.organization)
     process.env.INPUT_SCM_TYPE = 'git'
+
+    mockAxios.get.mockResolvedValueOnce({
+      // Initialization call
+      headers: {}
+    })
 
     mockAxios.get.mockRejectedValueOnce({
       response: {

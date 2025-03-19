@@ -1,7 +1,7 @@
 {
   "name": "action-awx-project",
   "description": "Action for creating an AWX/AAP Project",
-  "version": "v1.0.3",
+  "version": "v1.1.0",
   "author": "Dennis Whitney",
   "private": true,
   "homepage": "https://github.com/irunasroot/action-awx-project",
@@ -73,7 +73,7 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0",
-    "axios": "^1.7.7"
+    "axios": "^1.8.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
@@ -82,7 +82,9 @@
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.7",
+    "@typescript-eslint/parser": "^8.26.1",
     "@vercel/ncc": "^0.38.2",
+    "eslint": "^9.22.0",
     "eslint-plugin-jest": "^28.8.3",
     "eslint-plugin-jsonc": "^2.16.0",
     "eslint-plugin-prettier": "^5.2.1",
