@@ -1,0 +1,3 @@
+{
+  "ignore": ["converge/**", "node_modules/**"]
+}
